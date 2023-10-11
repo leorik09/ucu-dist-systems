@@ -6,13 +6,13 @@ app = FastAPI()
 list = []
 @app.get("/all")
 def read_all():
-    return list
+    return {"main list": list}
 
 @app.post("/append")
 def add_number(num: int):
     list.append(num)
 
-    hard_urls = ["http://127.0.0.1:4000/append", "http://127.0.0.1:2000/append"]
+    hard_urls = ["http://secondary:8000/append"]
     for url in hard_urls:
         r = httpx.post(
             url=url,
