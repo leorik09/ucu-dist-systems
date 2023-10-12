@@ -12,7 +12,7 @@ def read_all():
 def add_number(num: int):
     list.append(num)
 
-    hard_urls = ["http://secondary:8000/append"]
+    hard_urls = [f"http://secondary-{i}:8000/append" for i in range(1, 3)]
     for url in hard_urls:
         r = httpx.post(
             url=url,
