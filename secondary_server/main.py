@@ -12,7 +12,7 @@ def read_all():
 
 
 @app.post("/append")
-def add_number(num: int):
+async def add_number(num: int):
     data.append(num)
     time.sleep(1)
 
