@@ -7,10 +7,12 @@ services:
       - "8000:8000"
     networks:
       - mynetwork
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 
   secondary-1:
     build:
-      context: lev_secondary_server
+      context: secondary_server
       dockerfile: Dockerfile
     ports:
       - "7000:8000"
@@ -19,16 +21,24 @@ services:
 
   secondary-2:
     build:
-      context: lev_secondary_server
+      context: secondary_server
       dockerfile: Dockerfile
     ports:
       - "7001:8000"
     networks:
       - mynetwork
 
-
+  secondary-3:
+    build:
+      context: secondary_server
+      dockerfile: Dockerfile
+    ports:
+      - "7002:8000"
+    networks:
+      - mynetwork
 
 networks:
   mynetwork:
+    name: data_network
     driver: bridge
 
