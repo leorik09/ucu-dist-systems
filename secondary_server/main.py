@@ -1,5 +1,5 @@
 import time
-
+import random
 from fastapi import FastAPI
 
 app = FastAPI()
@@ -12,8 +12,8 @@ def read_all():
 
 
 @app.post("/append")
-def add_number(num: int):
+async def add_number(num: int):
     data.append(num)
-    time.sleep(1)
+    time.sleep(random.randint(1,3))
 
     return {"message": "Added"}
