@@ -13,6 +13,7 @@ def read_all():
 
 
 async def replicate_on_secondary(client: httpx.AsyncClient, url: str, num: int):
+    LOGGER.info(f"Calling {url}.")
     r = await client.post(
         url=url,
         params={"num": num}
