@@ -37,6 +37,25 @@ services:
     networks:
       - mynetwork
 
+  secondary-4:
+    build:
+      context: secondary_server
+      dockerfile: Dockerfile
+    ports:
+      - "7003:8000"
+    networks:
+      - mynetwork
+
+  secondary-5:
+    build:
+      context: secondary_server
+      dockerfile: Dockerfile
+    ports:
+      - "7004:8000"
+    networks:
+      - mynetwork
+
+
 networks:
   mynetwork:
     name: data_network
