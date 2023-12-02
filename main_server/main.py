@@ -1,18 +1,19 @@
 import httpx
 import asyncio
 import threading
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Response, status
 from utils import get_containers_address_in_network, LOGGER
 from datetime import datetime
 
 app = FastAPI()
 data = []
-index_key = 0
+numeric_values = set()
 
 
 @app.get("/all")
 def read_all():
-    return {"main data": data}
+    data_repr = [item["num"] for item in data]
+    return {"main data": data_repr}
 
 
 async def replicate_on_secondary(client: httpx.AsyncClient, url: str, item: dict):
@@ -22,8 +23,10 @@ async def replicate_on_secondary(client: httpx.AsyncClient, url: str, item: dict
         timeout=100,
         params=item
     )
-    if r.status_code == 200:
+    if r.status_code == 201:
         LOGGER.info(f"Replication to {url} is successful.")
+    if r.status_code == 304:
+        LOGGER.info(f"Replication to {url} failed. Duplicate value")
     return r
 
 
@@ -50,13 +53,18 @@ def run_async_in_thread(hard_urls, num, write_concern):
 
 
 @app.post("/append", status_code=201)
-async def add_number(num: int, write_concern: int):
+async def add_number(num: int, write_concern: int, response: Response):
     item = {"num": num, "timestamp": str(datetime.now())}
 
     containers = get_containers_address_in_network('data_network')
     hard_urls = [f"http://{container_id}:8000/append" for container_id in containers]
-    data.append(num)
 
+    if num in numeric_values:
+        response.status_code = status.HTTP_304_NOT_MODIFIED
+        return response
+
+    numeric_values.add(num)
+    data.append(item)
     replication_count = 1
 
     if write_concern == 1:
@@ -69,4 +77,4 @@ async def add_number(num: int, write_concern: int):
         raise HTTPException(status_code=500, detail="Unable to replicate")
 
     LOGGER.info("successfully replicated to all nodes")
-    return {"Message": "Appended number"}
+    return {"message": "Appended number"}
