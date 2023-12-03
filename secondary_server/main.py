@@ -1,4 +1,7 @@
 import random
+import time
+
+import fastapi.exceptions
 from fastapi import FastAPI, Response, status
 import logging
 import asyncio
@@ -7,6 +10,7 @@ LOGGER = logging.getLogger(__name__)
 app = FastAPI()
 data = []
 numeric_values = set()
+random.seed(10)
 
 
 @app.get("/all")
@@ -18,7 +22,12 @@ def read_all():
 @app.post("/append", status_code=201)
 async def add_number(num: int, timestamp: str, response: Response):
     item = {"num": num, "timestamp": timestamp}
-    await asyncio.sleep(random.randint(5,20))
+    random_index = random.randint(5, 20)
+
+    if random_index >= 18:
+        raise fastapi.exceptions.HTTPException(status_code=500)
+
+    await asyncio.sleep(random_index)
     if num not in numeric_values:
         numeric_values.add(num)
         data.append(item)
