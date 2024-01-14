@@ -1,16 +1,13 @@
 import random
-import time
-
 import fastapi.exceptions
 from fastapi import FastAPI, Response, status
-import logging
+from datetime import datetime
 import asyncio
-LOGGER = logging.getLogger(__name__)
 
 app = FastAPI()
 data = []
 numeric_values = set()
-random.seed(10)
+random.seed(datetime.now().microsecond)
 
 
 @app.get("/all")
