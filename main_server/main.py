@@ -111,7 +111,10 @@ async def add_number(num: int, write_concern: int, response: Response, backgroun
         return response
 
     numeric_values.add(num)
+
     data.append(item)
+    data.sort(key=lambda x: x["timestamp"])
+    
     replication_count = 1
 
     if write_concern == 1:
